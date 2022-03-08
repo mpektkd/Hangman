@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane fx:id="container" minHeight="0" minWidth="0" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.hangman.ControllerHomepage">
+    <bottom>
+        <GridPane prefHeight="53.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+            <children>
+                <Button fx:id="enterChoice" alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false"  prefHeight="31.0" prefWidth="63.0" text="Enter" GridPane.columnIndex="5" />
+                <ComboBox fx:id="indexChoice" prefWidth="150.0" promptText="Index" GridPane.columnIndex="1" />
+                <ComboBox fx:id="letterChoice" prefWidth="150.0" promptText="Letter" GridPane.columnIndex="3" />
+            </children>
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="200.0" minWidth="10.0" prefWidth="23.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="10.0" prefWidth="89.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="10.0" minWidth="7.0" prefWidth="7.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="10.0" prefWidth="88.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="10.0" minWidth="7.0" prefWidth="7.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="10.0" prefWidth="71.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="310.0" />
+            </columnConstraints>
+            <padding>
+                <Insets bottom="3.0" />
+            </padding>
+            <rowConstraints>
+                <RowConstraints maxHeight="57.0" minHeight="10.0" prefHeight="57.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <BorderPane.margin>
+                <Insets />
+            </BorderPane.margin>
+        </GridPane>
+    </bottom>
+    <center>
+        <GridPane>
+            <children>
+                <TableView fx:id="tableChoices" prefHeight="400.0" prefWidth="172.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <GridPane.margin>
+                        <Insets right="10.0" />
+                    </GridPane.margin>
+                </TableView>
+                <GridPane GridPane.columnSpan="2">
+                    <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Words in dictionary" GridPane.rowIndex="1">
+                            <GridPane.margin>
+                                <Insets left="10.0" />
+                            </GridPane.margin>
+                        </Text>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Total Points" GridPane.rowIndex="2">
+                            <GridPane.margin>
+                                <Insets left="10.0" />
+                            </GridPane.margin>
+                        </Text>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Successful choices" GridPane.rowIndex="3">
+                            <GridPane.margin>
+                                <Insets left="10.0" />
+                            </GridPane.margin>
+                        </Text>
+                        <Text fx:id="numWordsText" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <GridPane.margin>
+                                <Insets left="10.0" />
+                            </GridPane.margin>
+                        </Text>
+                        <Text fx:id="pointsText" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                            <GridPane.margin>
+                                <Insets left="10.0" />
+                            </GridPane.margin>
+                        </Text>
+                        <Text fx:id="successText" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                            <GridPane.margin>
+                                <Insets left="10.0" />
+                            </GridPane.margin>
+                        </Text>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Dictionary">
+                            <GridPane.margin>
+                                <Insets left="10.0" />
+                            </GridPane.margin>
+                        </Text>
+                        <Text fx:id="dictText" strokeType="OUTSIDE" strokeWidth="0.0" text="" GridPane.columnIndex="1">
+                            <GridPane.margin>
+                                <Insets left="10.0" />
+                            </GridPane.margin>
+                        </Text>
+                    </children>
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="346.0" minWidth="152.0" prefWidth="164.0" />
+                        <ColumnConstraints fillWidth="false" hgrow="SOMETIMES" maxWidth="436.0" minWidth="67.0" prefWidth="436.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                </GridPane>
+                <GridPane GridPane.rowIndex="1">
+                    <children>
+                        <Label fx:id="hiddenWordText" alignment="BOTTOM_CENTER">
+                            <font>
+                                <Font name="System Bold" size="24.0" />
+                            </font>
+                        </Label>
+                        <ImageView fx:id="imageView" fitHeight="345.0" fitWidth="288.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="1" />
+                    </children>
+                    <columnConstraints>
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints maxHeight="59.0" minHeight="10.0" prefHeight="59.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="365.0" minHeight="10.0" prefHeight="341.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                </GridPane>
+            </children>
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints maxHeight="-Infinity" minHeight="10.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+        </GridPane>
+    </center>
+    <top>
+        <MenuBar BorderPane.alignment="CENTER">
+            <menus>
+                <Menu fx:id="applicationMenu" mnemonicParsing="false" text="Application">
+                    <items>
+                        <MenuItem fx:id="startMenuItem" mnemonicParsing="false"  text="Start" />
+                        <MenuItem fx:id="loadMenuItem" mnemonicParsing="false"  text="Load" />
+                        <MenuItem fx:id="createMenuItem" mnemonicParsing="false" text="Create" />
+                        <MenuItem fx:id="exitMenuItem" mnemonicParsing="false"  text="Exit" />
+                    </items>
+                </Menu>
+                <Menu fx:id="detailsMenu" mnemonicParsing="false" text="Details">
+                    <items>
+                        <MenuItem fx:id="dictMenuItem" mnemonicParsing="false"  text="Dictionary" />
+                        <MenuItem fx:id="roundsMenuItem" mnemonicParsing="false"  text="Rounds" />
+                        <MenuItem fx:id="solutionMenuItem" mnemonicParsing="false" text="Solution" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </top>
+</BorderPane>
