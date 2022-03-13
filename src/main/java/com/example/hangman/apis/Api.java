@@ -20,6 +20,7 @@ public class Api {
     public Api(URL url) {
         this.url = url;
     }
+
     public String response () {
         try{
             conn = (HttpURLConnection) url.openConnection();
@@ -54,11 +55,35 @@ public class Api {
 
     }
 
-    public void parse(String responseBody) {
+    public String parse(String responseBody) {
+        String value= new String(new StringBuilder(""));
+
+        try{
+            new JSONObject(responseBody);
+        }catch (JSONException e){
+            System.out.println(e.getMessage());
+            return value;
+        }
         JSONObject book = new JSONObject(responseBody);
-        JSONObject description = book.getJSONObject("description");
-        String value = description.getString("value");
-        System.out.println(value);
+
+        try {
+            JSONObject description = book.getJSONObject("description");
+            value = description.getString("value");
+            return value;
+
+        } catch (JSONException e) {
+            System.out.println(e.getMessage());
+        }
+
+        try {
+            String description = book.getString("description");
+            value = description;
+            return value;
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return value;
     }
 
 }
