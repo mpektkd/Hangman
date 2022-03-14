@@ -65,9 +65,15 @@ public class MyExceptions extends Exception {
         }
     }
 
-            public static class UnbalancedException extends Exception {
+    public static class UnbalancedException extends Exception {
         public UnbalancedException(String s) {
             super(s);
+        }
+    }
+
+    public static class LoadingDictinaryException extends Exception {
+        public LoadingDictinaryException() {
+            super();
         }
     }
 }

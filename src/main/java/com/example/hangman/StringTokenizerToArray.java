@@ -58,14 +58,17 @@ public class StringTokenizerToArray {
 
         }catch(InvalidRangeException e) {
 
-            if (e.Dialog()){
-                filter();
-            }
+//            if (e.Dialog()){
+//                filter();
+//            }
+            filter();
 
         }catch(InvalidCountException e) {
-            if (e.Dialog()){
-                dublicate(true);
-            }
+//            if (e.Dialog()){
+//                dublicate(true);
+//            }
+            dublicate(true);
+
         }catch(Exception e) {
             e.printStackTrace();
         }
@@ -74,9 +77,10 @@ public class StringTokenizerToArray {
             if (dublicate(false))
                 throw new MyExceptions.InvalidCountException("Invalid Count!");
         }catch(InvalidCountException e) {
-            if (e.Dialog()){
-                dublicate(true);
-            }
+//            if (e.Dialog()){
+//                dublicate(true);
+//            }
+            dublicate(true);
         }catch(Exception e) {
             e.printStackTrace();
         }

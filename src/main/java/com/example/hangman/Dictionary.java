@@ -5,6 +5,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Dictionary {
 
@@ -42,4 +44,33 @@ public class Dictionary {
 
     }
 
+    public static List<String> load(String dictionary) {
+
+        List<String> Tokens = new ArrayList<>();
+        try {
+
+            File file = new File(path + "/" + dictionary);
+
+            Scanner rd = new Scanner(file);
+            while(rd.hasNextLine()){
+                String data = rd.nextLine();
+                Tokens.add(data);
+            }
+            rd.close();
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        return Tokens;
+    }
+
+    public static Set<String> loadLib() {
+
+        return Stream.of(new File(path).listFiles())
+                .filter(file -> !file.isDirectory())
+                .map(File::getName)
+                .collect(Collectors.toSet());
+
+    }
 }

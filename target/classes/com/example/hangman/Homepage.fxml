@@ -124,19 +124,19 @@
         </GridPane>
     </center>
     <top>
-        <MenuBar BorderPane.alignment="CENTER">
+        <MenuBar fx:id="LoadMenuBar" BorderPane.alignment="CENTER">
             <menus>
                 <Menu fx:id="applicationMenu" mnemonicParsing="false" text="Application">
                     <items>
                         <MenuItem fx:id="startMenuItem" mnemonicParsing="false"  text="Start" />
-                        <MenuItem fx:id="loadMenuItem" mnemonicParsing="false"  text="Load" />
-                        <MenuItem fx:id="createMenuItem" mnemonicParsing="false" text="Create" />
+                        <MenuItem fx:id="loadMenuItem" onAction="#LoadDictionary" mnemonicParsing="false"  text="Load" />
+                        <MenuItem fx:id="createMenuItem" onAction="#CreateDictionary" mnemonicParsing="false" text="Create" />
                         <MenuItem fx:id="exitMenuItem" mnemonicParsing="false"  text="Exit" />
                     </items>
                 </Menu>
                 <Menu fx:id="detailsMenu" mnemonicParsing="false" text="Details">
                     <items>
-                        <MenuItem fx:id="dictMenuItem" mnemonicParsing="false"  text="Dictionary" />
+                        <MenuItem fx:id="dictMenuItem" onAction="#DictionaryStatistics" mnemonicParsing="false"  text="Dictionary" />
                         <MenuItem fx:id="roundsMenuItem" mnemonicParsing="false"  text="Rounds" />
                         <MenuItem fx:id="solutionMenuItem" mnemonicParsing="false" text="Solution" />
                     </items>

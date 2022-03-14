@@ -40,15 +40,21 @@ public class Hangman extends Application {
 //        stage.show();
 
         FXMLLoader fxmlLoader = new FXMLLoader(Hangman.class.getResource("Homepage.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 1000, 1000);
-        stage.setTitle("Hello!");
+        Scene scene = new Scene(fxmlLoader.load(), 800, 800);
+        stage.setTitle("MediaLab Hangman");
         stage.setScene(scene);
         stage.show();
 
-        try {
+        String ID = "OL31390631M";
 
-//            String ID = (new Input()).scan();
-            String ID = "OL31390631M";
+        createDictionary(ID);
+
+    }
+
+    public static void createDictionary(String ID){
+
+        try {
+//        String ID = "OL31390631M";
 
 //            URL url = new URL("https://openlibrary.org/works/OL45883W.json");   //description String
             URL url = new URL("https://openlibrary.org/works/" + ID + ".json");  //description JsonObject
@@ -58,7 +64,6 @@ public class Hangman extends Application {
 
             String response = api.response();
             String value = api.parse(response);
-            System.out.println(value);
 
             // Tokenize our dictionary
             List<String> TokensArray = getTokensArray(value, null);
@@ -68,11 +73,11 @@ public class Hangman extends Application {
 
             dictionary.store(ID, TokensArray);
 
-            } catch (MalformedURLException ex) {
+        } catch (MalformedURLException ex) {
             ex.printStackTrace();
         }
-    }
 
+    }
     public static void main(String[] args) {
         launch(args);
 

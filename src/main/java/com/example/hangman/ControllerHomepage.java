@@ -3,33 +3,34 @@ package com.example.hangman;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.hangman.exceptions.MyExceptions;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
+
+import static com.example.hangman.Hangman.createDictionary;
 
 /**
  * Controller of Homepage.fxml
@@ -47,6 +48,9 @@ public class ControllerHomepage {
     @FXML
     private Label welcomeText;
 
+    // Game Start
+    @FXML
+    private String ChosenDictionary;
 
     @FXML
     private void onHelloButtonClick(){
@@ -54,6 +58,15 @@ public class ControllerHomepage {
     };
 
     // Application Menu
+    @FXML
+    private MenuBar LoadMenuBar;
+
+    @FXML // fx:id="fruitCombo"
+    private ComboBox<String> DictionariesCombo; // Value injected by FXMLLoader
+
+    @FXML // fx:id="fruitCombo"
+    private TextField DictionariesID; // Value injected by FXMLLoader
+
     @FXML
     private Menu applicationMenu;
 
@@ -231,6 +244,145 @@ public class ControllerHomepage {
     @FXML
     private void startAction(ActionEvent event) {
         start();
+    }
+
+    @FXML
+    private void CreateDictionary(ActionEvent event) {
+
+        Stage primaryStage = (Stage) LoadMenuBar.getScene().getWindow();
+        popup(primaryStage, true);
+
+    }
+
+    @FXML
+    private void LoadDictionary(ActionEvent event) {
+
+        Stage primaryStage = (Stage) LoadMenuBar.getScene().getWindow();
+        popup(primaryStage, false);
+
+    }
+
+    private void popup(final Stage primaryStage, boolean create){
+        try{
+
+            final Stage dialog = new Stage();
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.initOwner(primaryStage);
+            VBox dialogVbox = new VBox(20);
+            dialogVbox.getChildren().add(new Text("Choose Dictionary ID"));
+
+            if (!create){
+
+                // Initialize dropdown List and add options
+                DictionariesCombo = new ComboBox<>();
+                DictionariesCombo.getItems().setAll(Dictionary.loadLib());
+                dialogVbox.getChildren().add(DictionariesCombo);
+
+                // Submit button for loading the dictionary
+                Button submit = new Button();
+                submit.setText("Submit");
+                submit.setOnAction(
+                        actionEvent -> {
+                            ChosenDictionary = DictionariesCombo.getValue();
+                            System.out.print(ChosenDictionary);
+                        }
+
+                );
+                dialogVbox.getChildren().add(submit);
+            }
+            else{
+                // Initialize dropdown List and add options
+                DictionariesID = new TextField();
+                dialogVbox.getChildren().add(DictionariesID);
+
+                // Submit button for loading the dictionary
+                Button submit = new Button();
+                submit.setText("Submit");
+                submit.setOnAction(
+                        actionEvent -> {
+                            createDictionary(DictionariesID.getText());
+                        }
+
+                );
+                dialogVbox.getChildren().add(submit);
+            }
+
+
+
+            // Create new Scene for Dialog Window
+            Scene dialogScene = new Scene(dialogVbox, 400, 300);
+            dialog.setScene(dialogScene);
+
+            dialog.show();
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private Stage CreateModal(ActionEvent event, String message) {
+
+        Stage primaryStage = (Stage) container.getScene().getWindow();
+        final Stage dialog = new Stage();
+
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.initOwner(primaryStage);
+
+        VBox dialogVbox = new VBox(20);
+        dialogVbox.getChildren().add(new Text(message));
+
+        // Create new Scene for Dialog Window
+        Scene dialogScene = new Scene(dialogVbox, 400, 300);
+        dialog.setScene(dialogScene);
+
+        return dialog;
+    }
+
+    @FXML
+    private void DictionaryStatistics(ActionEvent event) {
+
+        try {
+
+            if (ChosenDictionary == null)
+                throw new MyExceptions.LoadingDictinaryException();
+
+            List<String> strTokenArray = Dictionary.load(ChosenDictionary);
+
+            List<Integer> lengths = strTokenArray.stream().map(String::length).toList();
+
+            double count6 = 0;
+            double  count7_9 = 0;
+            double  count10_ = 0;
+
+            double size = (double)lengths.size();
+
+            for (Integer length : lengths) {
+                if (length == 6)
+                    count6++;
+                if (length >= 7 && length <= 9 )
+                    count7_9++;
+                if (length >= 10)
+                    count10_++;
+            }
+
+            Stage dialog = CreateModal(event, "Statistics");
+
+            VBox vbox = (VBox) dialog.getScene().getRoot();
+
+            vbox.getChildren().add(new Text("Percentage of words with 6 Letters: " + String.valueOf(count6 / size * 100)));
+            vbox.getChildren().add(new Text("Percentage of words with 7 - 9 Letters: " + String.valueOf(count7_9 / size * 100)));
+            vbox.getChildren().add(new Text("Percentage of words with 10+ Letters: " + String.valueOf(count10_ / size * 100)));
+
+            dialog.show();
+        }catch(MyExceptions.LoadingDictinaryException e){
+            Stage dialog = CreateModal(event, "Statistics");
+            VBox vbox = (VBox) dialog.getScene().getRoot();
+
+            vbox.getChildren().add(new Text("You have to choose a Dictionary!"));
+
+            dialog.show();
+        }
+
     }
 
     private void start() {
