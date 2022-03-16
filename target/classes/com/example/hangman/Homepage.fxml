@@ -128,7 +128,7 @@
             <menus>
                 <Menu fx:id="applicationMenu" mnemonicParsing="false" text="Application">
                     <items>
-                        <MenuItem fx:id="startMenuItem" mnemonicParsing="false"  text="Start" />
+                        <MenuItem fx:id="startMenuItem" onAction="#StargGame" mnemonicParsing="false"  text="Start" />
                         <MenuItem fx:id="loadMenuItem" onAction="#LoadDictionary" mnemonicParsing="false"  text="Load" />
                         <MenuItem fx:id="createMenuItem" onAction="#CreateDictionary" mnemonicParsing="false" text="Create" />
                         <MenuItem fx:id="exitMenuItem" mnemonicParsing="false"  text="Exit" />

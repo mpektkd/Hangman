@@ -1,7 +1,12 @@
 package com.example.hangman;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,7 +44,7 @@ import static com.example.hangman.Hangman.createDictionary;
 public class ControllerHomepage {
 
     private String dictID, libID;
-//    private Game game;
+    private Game game;
     boolean solution = false, gameEnded = false;
 
     @FXML
@@ -116,14 +121,14 @@ public class ControllerHomepage {
     private ImageView imageView;
 
     // Table with choices
-//    @FXML
-//    private TableView<Choices> tableChoices;
-//
-//    @FXML
-//    private TableColumn<Choices, Integer> indexCol;
-//
-//    @FXML
-//    private TableColumn<Choices, String> choicesCol;
+    @FXML
+    private TableView<Choices> tableChoices;
+
+    @FXML
+    private TableColumn<Choices, Integer> indexCol;
+
+    @FXML
+    private TableColumn<Choices, String> choicesCol;
 
     // Input
 
@@ -242,7 +247,7 @@ public class ControllerHomepage {
 
 
     @FXML
-    private void startAction(ActionEvent event) {
+    private void StartGame(ActionEvent event) {
         start();
     }
 
@@ -259,6 +264,9 @@ public class ControllerHomepage {
 
         Stage primaryStage = (Stage) LoadMenuBar.getScene().getWindow();
         popup(primaryStage, false);
+        dictText.setText(ChosenDictionary);
+        numWordsText.setText(String.valueOf(CountWords()));
+
 
     }
 
@@ -385,17 +393,36 @@ public class ControllerHomepage {
 
     }
 
+    private long CountWords() {
+
+        long lines = -1;
+
+        try {
+            if (ChosenDictionary != null){
+                BufferedReader reader = new BufferedReader(new FileReader(ChosenDictionary));
+                lines++;
+                while (reader.readLine() != null) lines++;
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return lines;
+
+    }
+
+
     private void start() {
         try{
-//            game = new Game(this.dictID);
+            game = new Game(ChosenDictionary);
             solution = false;
 
             letterChoice.getItems().clear();
             indexChoice.getItems().clear();
-//            tableChoices.getColumns().clear();
+            tableChoices.getColumns().clear();
 
             //Update Informations
-            dictText.setText(this.dictID);
+            dictText.setText(ChosenDictionary);
 //            numWordsText.setText(String.valueOf(game.num_words));
             pointsText.setText("0");;
             successText.setText("0");;

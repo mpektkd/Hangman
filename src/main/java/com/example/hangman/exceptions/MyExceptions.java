@@ -76,4 +76,10 @@ public class MyExceptions extends Exception {
             super();
         }
     }
+
+    public static class OutOfGameStorage extends Exception {
+        public OutOfGameStorage() {
+            super();
+        }
+    }
 }
