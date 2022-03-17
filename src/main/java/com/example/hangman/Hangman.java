@@ -47,7 +47,7 @@ public class Hangman extends Application {
 
         String ID = "OL31390631M";
 
-        createDictionary(ID);
+//        createDictionary(ID);
 
     }
 

@@ -9,7 +9,7 @@
     <bottom>
         <GridPane prefHeight="53.0" prefWidth="600.0" BorderPane.alignment="CENTER">
             <children>
-                <Button fx:id="enterChoice" alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false"  prefHeight="31.0" prefWidth="63.0" text="Enter" GridPane.columnIndex="5" />
+                <Button fx:id="enterChoice" onAction="#enterAction" alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false"  prefHeight="31.0" prefWidth="63.0" text="Enter" GridPane.columnIndex="5" />
                 <ComboBox fx:id="indexChoice" prefWidth="150.0" promptText="Index" GridPane.columnIndex="1" />
                 <ComboBox fx:id="letterChoice" prefWidth="150.0" promptText="Letter" GridPane.columnIndex="3" />
             </children>
@@ -128,17 +128,17 @@
             <menus>
                 <Menu fx:id="applicationMenu" mnemonicParsing="false" text="Application">
                     <items>
-                        <MenuItem fx:id="startMenuItem" onAction="#StargGame" mnemonicParsing="false"  text="Start" />
+                        <MenuItem fx:id="startMenuItem" onAction="#StartGame" mnemonicParsing="false"  text="Start" />
                         <MenuItem fx:id="loadMenuItem" onAction="#LoadDictionary" mnemonicParsing="false"  text="Load" />
                         <MenuItem fx:id="createMenuItem" onAction="#CreateDictionary" mnemonicParsing="false" text="Create" />
-                        <MenuItem fx:id="exitMenuItem" mnemonicParsing="false"  text="Exit" />
+                        <MenuItem fx:id="exitMenuItem" onAction="#exitAction" mnemonicParsing="false"  text="Exit" />
                     </items>
                 </Menu>
                 <Menu fx:id="detailsMenu" mnemonicParsing="false" text="Details">
                     <items>
                         <MenuItem fx:id="dictMenuItem" onAction="#DictionaryStatistics" mnemonicParsing="false"  text="Dictionary" />
-                        <MenuItem fx:id="roundsMenuItem" mnemonicParsing="false"  text="Rounds" />
-                        <MenuItem fx:id="solutionMenuItem" mnemonicParsing="false" text="Solution" />
+                        <MenuItem fx:id="roundsMenuItem" onAction="#roundsAction" mnemonicParsing="false"  text="Rounds" />
+                        <MenuItem fx:id="solutionMenuItem" onAction="#ShowSolution" mnemonicParsing="false" text="Solution" />
                     </items>
                 </Menu>
             </menus>

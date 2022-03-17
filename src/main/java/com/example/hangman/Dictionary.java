@@ -67,7 +67,7 @@ public class Dictionary {
 
     public static Set<String> loadLib() {
 
-        return Stream.of(new File(path).listFiles())
+        return Stream.of(Objects.requireNonNull(new File(path).listFiles()))
                 .filter(file -> !file.isDirectory())
                 .map(File::getName)
                 .collect(Collectors.toSet());

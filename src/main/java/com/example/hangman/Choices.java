@@ -1,6 +1,7 @@
 package com.example.hangman;
 
 import com.example.hangman.exceptions.MyExceptions;
+import javafx.beans.property.StringProperty;
 import javafx.util.Pair;
 
 import java.io.BufferedReader;
@@ -19,13 +20,13 @@ public class Choices {
     private String Word;
     private List<Character> WordList;
     private String _dictionary;
-    private List<Character> predictedlistWord;
+    public List<Character> predictedlistWord;
 
     // significant variables for representing the choices
-    private List<String> letters = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I",
-                                                       "J", "K", "L", "M", "N", "O", "P", "Q", "R",
-                                                            "R", "S", "T", "U", "V", "W", "X", "Y", "Z") ;
-    private List<List<Pair<String, Double>>> Choices;
+    public List<String> letters = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I",
+                                                "J", "K", "L", "M", "N", "O", "P", "Q",
+                                                "R", "S", "T", "U", "V", "W", "X", "Y", "Z") ;
+    public List<List<Pair<String, Double>>> Choices;
 
     public Choices(String word, String dictionary){
 
@@ -49,16 +50,23 @@ public class Choices {
             Choices.add(temp);
         }
 
-        update();
-
-
     }
 
     public void update(){
 
+        // change the predictedListWord based on the choice of the user
+        for (int i = 0; i < predictedlistWord.size(); i++) {
+            predictedlistWord.set(i, this.predictedlistWord.get(i)); //empty
+        }
+
+        /*
+
+            Calculate the probabilities
+
+         */
         boolean all_e = true;
 
-        for (char ch : WordList){
+        for (char ch : predictedlistWord){
             if (ch != 'e'){
                 all_e = false;
                 break;
@@ -70,37 +78,32 @@ public class Choices {
                                         .stream()
                                         .filter(p -> p.length() == Word.length())
                                         .toList();
-        // list of indexes
-        List<Integer> indexes = IntStream.range(0, tokens.size()).boxed().toList();
-
+        // list of filterTokens
+        List<String> filterTokens = new ArrayList<>();
 
         // temporary ch-list for each token
         List<Character> temp = new ArrayList<>();
 
-        for (int i = 0; i < tokens.size(); i++){
+        boolean remove ;
 
-            for (char ch : tokens.get(i).toCharArray()) {
+        for (String token : tokens) {
+            remove = false;
+
+            for (char ch : token.toCharArray()) {
                 temp.add(ch);
             }
-
-            for(int j = 0; j < predictedlistWord.size(); j++){
+            for (int j = 0; j < predictedlistWord.size(); j++) {
 
                 char c1 = predictedlistWord.get(j);
                 char c2 = temp.get(j);
 
-                if(c1 != 'e' && c1 != c2 && !all_e){
-                    indexes.remove(i);
+                if (c1 != 'e' && c1 != c2 && !all_e) {
+                    remove = true;
+                    break;
                 }
-
             }
-
-        }
-
-        List<String> filterTokens = new ArrayList<>();
-
-        for (Integer index: indexes){
-
-            filterTokens.add(tokens.get(index));
+            if (!remove)
+                filterTokens.add(token);
 
         }
 
@@ -127,16 +130,18 @@ public class Choices {
             Choices.set(i, temp_choice);
         }
 
+        // Sorting of the letters based on the probabilities
         for (int i = 0; i < Word.length(); i++) {
 
             List<Pair<String, Double>> choice = Choices.get(i);
             choice.sort((o1, o2) -> {
                 int res = 0;
 
+                // for descending order
                 if (o1.getValue() < o2.getValue())
-                    res = -1;
-                if (o1.getValue() > o2.getValue())
                     res = 1;
+                if (o1.getValue() > o2.getValue())
+                    res = -1;
 
                 return res;
             });

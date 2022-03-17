@@ -1,6 +1,7 @@
 package com.example.hangman;
 
 import com.example.hangman.exceptions.MyExceptions;
+import javafx.util.Pair;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -14,16 +15,21 @@ import java.util.stream.Stream;
 public class Game {
 
     // File for storing last 5 games
-    private static String path = System.getProperty("user.dir") + "/games";
+    public static String path = System.getProperty("user.dir") + "/games";
 
-    private String Word;
-    private Integer Tries = 0;
-    private String Winner;
+    public String Word;
+    public Integer Tries = 0;
+    public String Winner;
+
+    public Integer faults = 0;
+    public Integer correct = 0;
+    public boolean solution = false;
 
     private String _dictionary;
 
-    private Integer TotalPoints = 0;
-    private Double Success = 0.0;
+    public Integer TotalPoints;
+
+    public Choices choices;
 
     public Game(String dictionary){
 
@@ -43,7 +49,8 @@ public class Game {
         // initialize game word
         Word = tokens.get(random_index);
 
-
+        TotalPoints = Word.length() * 15;
+        choices = new Choices(Word, _dictionary);
 
     }
 
@@ -54,11 +61,12 @@ public class Game {
             if (CountGames() == 5)
                 throw new MyExceptions.OutOfGameStorage();
 
+            this.Tries = this.correct + this.faults;
             List<String> tokens = Arrays.asList(String.valueOf(this.Word), String.valueOf(this.Tries), String.valueOf(this.Winner));;
 
             String GameName = new SimpleDateFormat("yyyyMMddHHmm'.txt'").format(new Date());
 
-            File file = new File(path + "/" + "hangman_GAME - " + GameName + ".txt");
+            File file = new File(path + "/" + "hangman_GAME - " + GameName);
 
             FileWriter fw = new FileWriter(file.getAbsoluteFile());
             BufferedWriter bw = new BufferedWriter(fw);
@@ -79,33 +87,70 @@ public class Game {
 
     }
 
-    public static List<String> load(String dictionary) {
-
-        List<String> Tokens = new ArrayList<>();
-        try {
-
-            File file = new File(path + "/" + dictionary);
-
-            Scanner rd = new Scanner(file);
-            while(rd.hasNextLine()){
-                String data = rd.nextLine();
-                Tokens.add(data);
-            }
-            rd.close();
-
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-
-        return Tokens;
-    }
-
     public static Integer CountGames() {
 
         return Stream.of(Objects.requireNonNull(new File(path).listFiles()))
                 .filter(file -> !file.isDirectory())
                 .map(File::getName)
                 .collect(Collectors.toSet()).size();
+
+    }
+
+    public void CalculatePointsAndSuccess(Integer index, Character ch){
+
+        Double probability;
+
+        if (Word.charAt(index) == ch){
+            this.choices.predictedlistWord.set(index, ch);
+            correct++;
+
+            for (Pair<String, Double> pair : this.choices.Choices.get(index)){
+                if (pair.getKey().charAt(0) == ch){
+                    probability = pair.getValue();
+                    if(probability >= 0.6)
+                        TotalPoints += 5;
+                    else if(probability <= 0.6 && probability >= 0.4)
+                        TotalPoints += 10;
+                    else if(probability <= 0.4 && probability >= 0.25)
+                        TotalPoints += 15;
+                    else if(probability <= 0.25)
+                        TotalPoints += 30;
+                }
+
+            }
+
+        }
+        else{
+            faults ++;
+            TotalPoints -= 15;
+        }
+
+    }
+
+    public Integer end(){
+
+        if (faults == 5)
+            return -1;
+        else
+            if (correct == Word.length())
+                return 1;
+        return 0;
+    }
+
+    public void delete(){
+
+        List<String> history = Stream.of(Objects.requireNonNull(new File(path).listFiles()))
+                                .filter(file -> !file.isDirectory())
+                                .map(File::getName).toList();
+
+        File file = new File(System.getProperty("user.dir") +"/games/" + history.get(history.size() - 1));
+
+        if (file.delete()) {
+            System.out.println("File deleted successfully");
+        }
+        else {
+            System.out.println("Failed to delete the file");
+        }
 
     }
 }

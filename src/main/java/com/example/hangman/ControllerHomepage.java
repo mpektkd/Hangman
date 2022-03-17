@@ -1,16 +1,12 @@
 package com.example.hangman;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.example.hangman.exceptions.MyExceptions;
 import javafx.application.Platform;
@@ -46,6 +42,7 @@ public class ControllerHomepage {
     private String dictID, libID;
     private Game game;
     boolean solution = false, gameEnded = false;
+    public  int isOver;
 
     @FXML
     private BorderPane container;
@@ -122,13 +119,13 @@ public class ControllerHomepage {
 
     // Table with choices
     @FXML
-    private TableView<Choices> tableChoices;
+    private TableView<TableChoice> tableChoices;
 
     @FXML
-    private TableColumn<Choices, Integer> indexCol;
+    private TableColumn<TableChoice, Integer> indexCol;
 
     @FXML
-    private TableColumn<Choices, String> choicesCol;
+    private TableColumn<TableChoice, String> choicesCol;
 
     // Input
 
@@ -136,7 +133,7 @@ public class ControllerHomepage {
     private ComboBox<Integer> indexChoice;
 
     @FXML
-    private ComboBox<Character> letterChoice;
+    private ComboBox<String> letterChoice;
 
     @FXML
     private Button enterChoice;
@@ -145,95 +142,7 @@ public class ControllerHomepage {
 
     @FXML
     private void enterAction(ActionEvent event) {
-        try {
-//            int isOver = game.gameOver();
-//            if(solution == false) {
-//                if(isOver == 0) {
-//
-//                    char c = letterChoice.getValue();
-//                    int i = indexChoice.getValue();
-//                    int succ = game.nextTurn(c, i);
-//                    game.findPoints(succ, i, c, game.mapList, game.candidateWords.size());
-//
-//                    pointsText.setText(String.valueOf(game.points));;
-//                    successText.setText(String.valueOf(game.success));;
-//
-//                    //Update hidden word and image
-//                    updateActiveWord();
-//                    updateTable();
-//                    String img = "file:.\\images\\" + String.valueOf(game.faults+1) + ".png";
-//                    Image image = new Image(img);
-//                    imageView.setImage(image);
-//                    //System.out.print(game.hiddenWord);
-//
-//                    letterChoice.getItems().clear();
-//                    for(char ch: game.activeChoices[i]) {
-//                        letterChoice.getItems().add(ch);
-//                    }
-//                    letterChoice.setDisable(false);
-//
-//                    gameEnded = true;
-//
-//                    isOver = game.gameOver();
-//                    if(isOver == 1) {
-//                        try {
-//                            Alert alert = new Alert(AlertType.INFORMATION);
-//                            alert.setTitle("WINNER WINNER CHICKEN DINNER");
-//                            alert.setHeaderText("You won.");
-//                            String cntText = "Points: " + pointsText.getText() + "\n" + "Hits: " + successText.getText();
-//                            alert.setContentText(cntText);
-//                            alert.showAndWait();
-//
-//                            String filename = ".\\src\\application\\History.txt";
-//                            FileWriter myWriter = new FileWriter(filename, true);
-//                            String hiddenword = (String) game.hiddenWord;
-//                            int tries = game.success + game.faults;
-//                            String numberOfTries = String.valueOf(tries);
-//                            String winner = "Player";
-//                            myWriter.write(hiddenword);
-//                            myWriter.write("\n");
-//                            myWriter.write(numberOfTries);
-//                            myWriter.write("\n");
-//                            myWriter.write(winner);
-//                            myWriter.write("\n");
-//
-//                            myWriter.close();
-//
-//                        }
-//                        catch (IOException e) {
-//                            System.out.println(e.getMessage());
-//                        }
-//                    }
-//                    else if (isOver == -1) {
-//                        try {
-//                            String filename = ".\\src\\application\\History.txt";
-//                            FileWriter myWriter = new FileWriter(filename, true);
-//                            String hiddenword = (String) game.hiddenWord;
-//                            int tries = game.success + game.faults;
-//                            String numberOfTries = String.valueOf(tries);
-//                            String winner = "Computer";
-//                            myWriter.write(hiddenword);
-//                            myWriter.write("\n");
-//                            myWriter.write(numberOfTries);
-//                            myWriter.write("\n");
-//                            myWriter.write(winner);
-//                            myWriter.write("\n");
-//
-//                            myWriter.close();
-//                        }
-//                        catch (IOException e) {
-//                            System.out.println(e.getMessage());
-//                        }
-//                    }
-//                }
-//
-//
-//            }
-
-
-        } catch(NullPointerException e) {
-
-        }
+        play();
     }
     private static boolean isNumeric(String s) {
         return s != null && s.matches("^[0-9]*$");
@@ -264,9 +173,6 @@ public class ControllerHomepage {
 
         Stage primaryStage = (Stage) LoadMenuBar.getScene().getWindow();
         popup(primaryStage, false);
-        dictText.setText(ChosenDictionary);
-        numWordsText.setText(String.valueOf(CountWords()));
-
 
     }
 
@@ -292,7 +198,9 @@ public class ControllerHomepage {
                 submit.setOnAction(
                         actionEvent -> {
                             ChosenDictionary = DictionariesCombo.getValue();
-                            System.out.print(ChosenDictionary);
+                            dictText.setText(ChosenDictionary);
+                            numWordsText.setText(String.valueOf(CountWords()));
+                            dialog.close();
                         }
 
                 );
@@ -309,6 +217,7 @@ public class ControllerHomepage {
                 submit.setOnAction(
                         actionEvent -> {
                             createDictionary(DictionariesID.getText());
+                            dialog.close();
                         }
 
                 );
@@ -399,7 +308,8 @@ public class ControllerHomepage {
 
         try {
             if (ChosenDictionary != null){
-                BufferedReader reader = new BufferedReader(new FileReader(ChosenDictionary));
+                String path_ = System.getProperty("user.dir") + "/medialab/" + ChosenDictionary;
+                BufferedReader reader = new BufferedReader(new FileReader(path_));
                 lines++;
                 while (reader.readLine() != null) lines++;
             }
@@ -414,128 +324,215 @@ public class ControllerHomepage {
 
     private void start() {
         try{
-            game = new Game(ChosenDictionary);
-            solution = false;
+            if (ChosenDictionary == null)
+                throw new MyExceptions.LoadingDictinaryException();
 
-            letterChoice.getItems().clear();
+            game = new Game(ChosenDictionary);
+//            solution = false;
+
+            System.out.println(game.Word);
+            // clear from the previous game
             indexChoice.getItems().clear();
             tableChoices.getColumns().clear();
+            letterChoice.getItems().clear();
+
+            // initialize the letters
+            letterChoice.getItems().setAll(game.choices.letters);
+
 
             //Update Informations
             dictText.setText(ChosenDictionary);
-//            numWordsText.setText(String.valueOf(game.num_words));
+            numWordsText.setText(String.valueOf(CountWords()));
             pointsText.setText("0");;
             successText.setText("0");;
 
+            // Recalculate the probabilities and the sorting
+            // change the predictedListWord based on the choice
+            // of the user
+            game.choices.update();
+
             // Update table with choices
-//            game.sortChoices();
-//            List<Choices> myList = new ArrayList<Choices>();
-//            for(int i=0; i < game.hiddenWord.length(); i++) {
-//                String choices = ListToString(game.activeChoices[i]);
-//                myList.add(new Choices(i, choices));
-//                indexChoice.getItems().add(i);
-//            }
-//            indexCol = new TableColumn<Choices, Integer>("Index");
-//            indexCol.setCellValueFactory(new PropertyValueFactory<Choices, Integer>("index"));
-//            choicesCol = new TableColumn<Choices, String>("Sorted Choices");
-//            choicesCol.setCellValueFactory(new PropertyValueFactory<Choices, String>("choices"));
-//
-//            ObservableList<Choices> myObservableList = FXCollections.observableList(myList);
-//            tableChoices.setItems(myObservableList);
-//            tableChoices.getColumns().addAll(indexCol, choicesCol);
+            updateTable();
 
             //Update hidden word and image
             updateActiveWord();
-            Image image = new Image("file:.\\images\\1.png");
+            Image image = new Image(System.getProperty("user.dir") + "/images/1_phase.png");
             imageView.setImage(image);
 
-            indexChoice.setValue(0);
+        } catch(MyExceptions.LoadingDictinaryException e){
+            Stage dialog = CreateModal(new ActionEvent(), "Statistics");
+            VBox vbox = (VBox) dialog.getScene().getRoot();
 
+            vbox.getChildren().add(new Text("You have to choose a Dictionary!"));
 
-
-        } catch(NullPointerException e) {
-            Alert alert = new Alert(AlertType.ERROR);
-            alert.setTitle("Error starting the game");
-            alert.setHeaderText("No dictionary defined");
-            alert.setContentText("Please load or create a dictionary in order to start a new game!");
-            alert.showAndWait();
+            dialog.show();
         }
+    }
+
+    public void play(){
+        try {
+//            int isOver = game.end();
+//            if(!solution) {
+//                if(isOver == 1) {
+
+            // take the user choice
+            String c = letterChoice.getValue();
+            Integer i = indexChoice.getValue();
+
+            // get success or not and in yes then update predictedWord
+            game.CalculatePointsAndSuccess(i, c.charAt(0));
+
+            // show the results to the UI
+            pointsText.setText(String.valueOf(game.TotalPoints));;
+            successText.setText(String.valueOf(game.correct));;
+
+            // clear the word indexing, as it may be some
+            // changes in the predictedListWord
+            indexChoice.getItems().clear();
+
+            // Recalculate the probabilities and the sorting
+            // change the predictedListWord based on the choice
+            // of the user
+            game.choices.update();
+
+            // Update table with choices
+            updateTable();
+
+            //Update hidden word and image
+            updateActiveWord();
+            String img = System.getProperty("user.dir") + "/images/" + String.valueOf(game.faults+1) + "_phase.png";
+            Image image = new Image(img);
+            imageView.setImage(image);
+
+
+
+            isOver = game.end();
+            if(isOver == 1) {
+                try {
+                    Alert alert = new Alert(AlertType.INFORMATION);
+                    alert.setTitle("WINNER!");
+                    alert.setHeaderText("You won.");
+                    String cntText = "Points: " + pointsText.getText() + "\n" + "Succeeded Hits: " + successText.getText();
+                    alert.setContentText(cntText);
+                    alert.showAndWait();
+
+                    game.choices.update();
+
+                    // Update table with choices
+                    updateTable();
+
+                    //Update hidden word and image
+                    updateActiveWord();
+
+                    // End game and define the winner
+                    endGame();
+                    game.Winner = "User";
+                    game.store();
+                }
+                catch (MyExceptions.OutOfGameStorage e){
+                    NotEnoughStorage();
+                }
+            }
+            else if (isOver == -1) {
+                try {
+                    Alert alert = new Alert(AlertType.INFORMATION);
+                    alert.setTitle("LOSER!");
+                    alert.setHeaderText("You lost.");
+                    String cntText = "Points: " + pointsText.getText() + "\n" + "Succeeded Hits: " + successText.getText();
+                    alert.setContentText(cntText);
+                    alert.showAndWait();
+
+                    // End game and define the winner
+                    endGame();
+                    game.Winner = "PC";
+                    game.store();
+
+                } catch (MyExceptions.OutOfGameStorage e) {
+                    NotEnoughStorage();
+                }
+            }
+        } catch(NullPointerException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void NotEnoughStorage(){
+        Stage dialog = CreateModal(new ActionEvent(), "Not Enough Storage");
+        VBox vbox = (VBox) dialog.getScene().getRoot();
+
+        vbox.getChildren().add(new Text("Would you like to delete the oldest?"));
+
+        Button yes = new Button();
+        yes.setText("Yes");
+        yes.setOnAction(
+                actionEvent -> {
+                    game.delete();
+                    try {
+                        game.store();
+                    } catch (MyExceptions.OutOfGameStorage e) {
+                        e.printStackTrace();
+                    }
+                    dialog.close();
+                }
+
+        );
+        Button no = new Button();
+        no.setText("No");
+        no.setOnAction(
+                actionEvent -> {
+                    dialog.close();
+                }
+
+        );
+        vbox.getChildren().add(yes);
+        vbox.getChildren().add(no);
+
+        dialog.show();
     }
 
     private void updateActiveWord() {
-        String word = "";
-        int i =0;
-//        for(char letter: game.activeWord) {
-//            if (letter == 0) word += "_";
-//            else word += letter;
-//            if (i != game.hiddenWord.length())
-//                word += " ";
-//            i+=1;
-//        }
-        hiddenWordText.setText(word);
+        StringBuilder word = new StringBuilder();
+        for(int i = 0; i < game.choices.predictedlistWord.size(); i++) {
+            Character letter = game.choices.predictedlistWord.get(i);
+            if (letter == 'e') word.append("_");
+            else word.append(letter);
+            word.append(" ");
+        }
+        hiddenWordText.setText(word.toString());
     }
 
     private void updateTable() {
-//        game.sortChoices();
-//        List<Choices> myList = new ArrayList<Choices>();
-//        for(int i=0; i < game.hiddenWord.length(); i++) {
-//            String choices = ListToString(game.activeChoices[i]);
-//            myList.add(new Choices(i, choices));
-//        }
-//        indexCol = new TableColumn<Choices, Integer>("Index");
-//        indexCol.setCellValueFactory(new PropertyValueFactory<Choices, Integer>("index"));
-//        choicesCol = new TableColumn<Choices, String>("Sorted Choices");
-//        choicesCol.setCellValueFactory(new PropertyValueFactory<Choices, String>("choices"));
-//
-//        ObservableList<Choices> myObservableList = FXCollections.observableList(myList);
-//        tableChoices.setItems(myObservableList);
-    }
+        List<TableChoice> possibleChoices = new ArrayList<TableChoice>();
+        for(int i=0; i < game.Word.length(); i++) {
 
-    @FXML
-    private void loadAction(ActionEvent event) {
-        try {
-            Stage stage = new Stage ();
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("application/LoadPopup.fxml"));
-            Parent root = loader.load();
-            stage.setTitle("MediaLab Hangman");
-            stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL);
+            if (game.choices.predictedlistWord.get(i) != 'e')
+                continue;
 
-//            ControllerLoadPopup popup = loader.<ControllerLoadPopup>getController();
-//            popup.initialize();
-//            stage.showAndWait();
-//
-//            dictID = popup.getDictID();
-//            if (dictID != null)
-//                start();
+            StringBuilder temp = new StringBuilder();
+            for(int j = 0; j < game.choices.letters.size(); j++){
+                temp.append(game.choices.Choices.get(i).get(j).getKey());
+            }
+            String sortedChoices = new String((temp));
 
-        } catch(Exception e) {
-            e.printStackTrace();
+            possibleChoices.add(new TableChoice(i, sortedChoices));
+            indexChoice.getItems().add(i);
         }
-    }
+        indexCol = new TableColumn<TableChoice, Integer>("Index");
+        indexCol.setCellValueFactory(new PropertyValueFactory<TableChoice, Integer>("index"));
+        choicesCol = new TableColumn<TableChoice, String>("Sorted Choices");
+        choicesCol.setCellValueFactory(new PropertyValueFactory<TableChoice, String>("choice"));
 
-    @FXML
-    private void createAction(ActionEvent event) {
-        try {
-            Stage stage = new Stage ();
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("application/CreatePopup.fxml"));
-            Parent root = loader.load();
-            stage.setTitle("MediaLab Hangman");
-            stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.showAndWait();
-            stage.close();
-//            ControllerCreatePopup popup = loader.getController();
-//            dictID = popup.getDictID();
-//            libID = popup.getLibID();
-            if (dictID != null && libID != null)
-                start();
+        ObservableList<TableChoice> myObservableList = FXCollections.observableList(possibleChoices);
+        tableChoices.setItems(myObservableList);
+        tableChoices.getColumns().setAll(indexCol, choicesCol);
 
-        } catch(Exception e) {
-            e.printStackTrace();
+        // to avoid null reference
+        if( indexChoice.getItems().size() != 0){
+            indexChoice.setValue(indexChoice.getItems().get(0));
+            letterChoice.setValue(letterChoice.getItems().get(0));
         }
-    }
 
+    }
     @FXML
     private void exitAction(ActionEvent event) {
         Platform.exit();
@@ -543,79 +540,93 @@ public class ControllerHomepage {
     }
 
     @FXML
-    private void dictAction(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("application/DictionaryPopup.fxml"));
-            Parent root = (Parent) loader.load();
-            Stage stage = new Stage();
-            stage.setTitle("MediaLab Hangman");
-            stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL);
-//            ControllerDictionaryPopup popup = loader.<ControllerDictionaryPopup>getController();
-//            popup.initialize(game.activeDict);
-            stage.show();
-        } catch(NullPointerException e) {
-            Alert alert = new Alert(AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("No dictionary defined");
-            alert.setContentText("Please load or create a dictionary in order to view its information!");
-            alert.showAndWait();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
     private void roundsAction(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("application/RoundsPopup.fxml"));
-            Parent root = (Parent) loader.load();
-            Stage stage = new Stage();
-            stage.setTitle("MediaLab Hangman");
-            stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL);
-//            ControllerRoundsPopup popup = loader.<ControllerRoundsPopup>getController();
-//            popup.initialize();
-            stage.show();
+
+            // take the set of game-files
+            Set<String> folder = Stream.of(Objects.requireNonNull(new File(Game.path).listFiles()))
+                                                .filter(file -> !file.isDirectory())
+                                                .map(File::getName)
+                                                .collect(Collectors.toSet());
+
+            Stage dialog = CreateModal(event, "Game History");
+
+            VBox vbox = (VBox) dialog.getScene().getRoot();
+
+
+            // iterate through the files
+
+            int counter = 0;
+            int indx;
+
+            List<String> info = Arrays.asList("Word: ", ", Tries: ", ", Winner: ");
+            String line;
+
+            for (String filepath: folder){
+                counter ++;
+                indx = 0;
+
+                BufferedReader reader = new BufferedReader(new FileReader(System.getProperty("user.dir") +"/games/" + filepath));
+
+                Text text = new Text();
+                text.setText(String.valueOf(counter + ". "));
+
+                while ((line = reader.readLine()) != null){
+
+                    text.setText(text.getText() + info.get(indx) + line);
+                    indx++;
+
+                }
+                vbox.getChildren().add(text);
+
+            }
+
+            dialog.show();
         } catch(Exception e) {
             e.printStackTrace();
         }
     }
 
     @FXML
-    private void solutionAction(ActionEvent event) {
+    private void ShowSolution(ActionEvent event) {
 
+        showSolution();
+
+    }
+
+    public void showSolution(){
         try {
-            if (solution == false) {
-                solution = true;
-//                for(int i=0; i < game.hiddenWord.length(); i++) {
-//                    game.activeWord[i] = game.hiddenWord.charAt(i);
-//                }
-                updateActiveWord();
-                updateTable();
-                String img = "file:.\\images\\" + String.valueOf(7) + ".png";
-                Image image = new Image(img);
-                imageView.setImage(image);
-
-                String filename = ".\\src\\application\\History.txt";
-                FileWriter myWriter = new FileWriter(filename, true);
-//                String hiddenword = (String) game.hiddenWord;
-//                int tries = game.success + game.faults;
-//                String numberOfTries = String.valueOf(tries);
-//                String winner = "Computer";
-//                myWriter.write(hiddenword);
-//                myWriter.write("\n");
-//                myWriter.write(numberOfTries);
-//                myWriter.write("\n");
-//                myWriter.write(winner);
-//                myWriter.write("\n");
-
-                myWriter.close();
-            }
+            game.solution = true;
 
 
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
+            Stage dialog = CreateModal(new ActionEvent(), "Solution is revealed!");
+            VBox vbox = (VBox) dialog.getScene().getRoot();
+
+            vbox.getChildren().add(new Text("The secret word is: " + game.Word));
+
+            Button ok = new Button();
+            ok.setText("OK");
+            ok.setOnAction(
+                    actionEvent -> {
+                        // clear the game board
+                        dialog.close();
+                        endGame();
+                        game.Winner = "PC";
+                        try {
+                            game.store();
+                        } catch (MyExceptions.OutOfGameStorage e) {
+                            NotEnoughStorage();
+
+                        }
+                    }
+
+            );
+            vbox.getChildren().add(ok);
+
+            dialog.show();
+
+
+
         } catch (NullPointerException e) {
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Error");
@@ -623,26 +634,21 @@ public class ControllerHomepage {
             alert.setContentText("There is NO solution to \"NO game\"...");
             alert.showAndWait();
         }
-
-    }
-    @FXML
-    private void indexBoxChanged(ActionEvent event) {
-
-        indexChoice.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue == null) {
-                letterChoice.getItems().clear();
-                letterChoice.setDisable(true);
-            } else {
-                letterChoice.getItems().clear();
-                int index = indexChoice.getValue();
-//                for(char c: game.activeChoices[index]) {
-//                    letterChoice.getItems().add(c);
-//                }
-                letterChoice.setDisable(false);
-
-            }
-
-        });
     }
 
+
+    public void endGame(){
+
+        indexChoice.getItems().clear();
+        letterChoice.getItems().clear();
+        tableChoices.getColumns().clear();
+
+        dictText.setText("");
+        numWordsText.setText("");
+        pointsText.setText("");
+        successText.setText("");
+
+        hiddenWordText.setText("");
+        imageView.setImage(null);
+    }
 }
