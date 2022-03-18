@@ -13,6 +13,10 @@ public class Dictionary {
     private static String path = System.getProperty("user.dir") + "/medialab";
     private List<String> tokenArray;
 
+    /**
+     * Constructor of the class Dictionary
+     * @param strTokens list of tokens
+     */
     public Dictionary(List<String> strTokens){
         tokenArray = strTokens;
 
@@ -23,6 +27,12 @@ public class Dictionary {
         }
     }
 
+    /**
+     * Save the words of the dictionary in the specific folder PROJECT_ROOT/medialab/
+     * in a file named corresponding to the ID
+     * @param ID ID that describes the ebook on the OL
+     * @param tokens list of words that are going to be stored in the file
+     */
     public static void store(String ID, List<String> tokens) {
 
         try {
@@ -48,6 +58,12 @@ public class Dictionary {
 
     }
 
+    /**
+     * Returns the list of tokens that are stored in the specific
+     * file-dictionary
+     * @param dictionary the name of the file that is going to be load
+     * @return  list of tokens
+     */
     public static List<String> load(String dictionary) {
         File directory = new File(path);
 
@@ -73,6 +89,10 @@ public class Dictionary {
         return Tokens;
     }
 
+    /**
+     * Load all the filenames of the folder PROJECT_ROOT/medialab/
+     * @return  set of strings that are the names of the files
+     */
     public static Set<String> loadLib() {
         File directory = new File(path);
 

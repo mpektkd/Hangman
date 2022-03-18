@@ -496,6 +496,9 @@ public class ControllerHomepage {
         }
     }
 
+    /**
+     *
+     */
     public void play(){
         try {
 //            int isOver = game.end();
