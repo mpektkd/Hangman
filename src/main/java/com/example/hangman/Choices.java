@@ -96,18 +96,13 @@ public class Choices {
                 char c2 = temp.get(j);
 
                 // lowercase defines wrong guess
-//                System.out.println(c1 == toLowerCase(c2));
                 // remove words that do not have the correct char
                 if (c1 != 'ε' && c1 != c2 && !isLowerCase(c1) && !all_e) {
-//                    System.out.println(c1 == toLowerCase(c2));
-                    System.out.println("Im here" + c2 + " " + token);
                     remove = true;
                     break;
                 }
                 // remove words that do have the wrong char
                 if (c1 != 'ε' && c1 == toLowerCase(c2) && isLowerCase(c1) && !all_e) {
-//                    System.out.println(c1 == toLowerCase(c2));
-                    System.out.println("Im here" + c2 + " " + token);
                     remove = true;
                     break;
                 }
@@ -116,8 +111,6 @@ public class Choices {
                 filterTokens.add(token);
 
         }
-        System.out.println(tokens);
-        System.out.println(filterTokens);
 
         for (int i = 0; i < Word.length(); i++){
 
@@ -135,9 +128,6 @@ public class Choices {
                         count_temp++;
 
                 }
-                System.out.println(count_temp );
-                System.out.println((double)filterTokens.size());
-                System.out.println(count_temp / (double)filterTokens.size());
                 temp_choice.set(j, new Pair(temp_choice.get(j).getKey(), count_temp / (double)filterTokens.size()));
 
             }

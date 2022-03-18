@@ -34,6 +34,7 @@ import javafx.stage.Window;
 import static com.example.hangman.Hangman.createDictionary;
 import static com.example.hangman.StringTokenizerToArray.getTokensArray;
 import static java.lang.Character.isLowerCase;
+import static java.lang.Character.isMirrored;
 
 /**
  * Controller of Homepage.fxml
@@ -156,7 +157,6 @@ public class ControllerHomepage {
                 // Initialize dropdown List and add options
                 DictionariesCombo = new ComboBox<>();
                 DictionariesCombo.getItems().setAll(Dictionary.loadLib());
-                System.out.println(Dictionary.loadLib());
                 dialogVbox.getChildren().add(DictionariesCombo);
 
                 // Submit button for loading the dictionary
@@ -458,7 +458,6 @@ public class ControllerHomepage {
             game = new Game(ChosenDictionary);
 //            solution = false;
 
-            System.out.println(game.Word);
             // clear from the previous game
             indexChoice.getItems().clear();
             tableChoices.getColumns().clear();
@@ -488,7 +487,7 @@ public class ControllerHomepage {
             imageView.setImage(image);
 
         } catch(MyExceptions.LoadingDictinaryException e){
-            Stage dialog = CreateModal(new ActionEvent(), "Statistics");
+            Stage dialog = CreateModal(new ActionEvent(), "No Dictionary");
             VBox vbox = (VBox) dialog.getScene().getRoot();
 
             vbox.getChildren().add(new Text("You have to choose a Dictionary!"));
@@ -553,9 +552,9 @@ public class ControllerHomepage {
                     updateActiveWord();
 
                     // End game and define the winner
-                    endGame();
                     game.Winner = "User";
                     game.store();
+                    endGame();
                 }
                 catch (MyExceptions.OutOfGameStorage e){
                     NotEnoughStorage();
@@ -571,9 +570,9 @@ public class ControllerHomepage {
                     alert.showAndWait();
 
                     // End game and define the winner
-                    endGame();
                     game.Winner = "PC";
                     game.store();
+                    endGame();
 
                 } catch (MyExceptions.OutOfGameStorage e) {
                     NotEnoughStorage();
@@ -619,7 +618,6 @@ public class ControllerHomepage {
     }
 
     private void updateActiveWord() {
-        System.out.println(game.choices.predictedlistWord);
         StringBuilder word = new StringBuilder();
         for(int i = 0; i < game.choices.predictedlistWord.size(); i++) {
             Character letter = game.choices.predictedlistWord.get(i);
@@ -706,9 +704,11 @@ public class ControllerHomepage {
                     indx++;
 
                 }
+                reader.close();
                 vbox.getChildren().add(text);
 
             }
+
 
             dialog.show();
         } catch(Exception e) {
@@ -725,8 +725,6 @@ public class ControllerHomepage {
 
     public void showSolution(){
         try {
-            game.solution = true;
-
 
             Stage dialog = CreateModal(new ActionEvent(), "Solution is revealed!");
             VBox vbox = (VBox) dialog.getScene().getRoot();
@@ -761,10 +759,10 @@ public class ControllerHomepage {
 
     public void StoreSolution() {
 
-        endGame();
-        game.Winner = "PC";
         try {
+            game.Winner = "PC";
             game.store();
+            endGame();
         } catch (MyExceptions.OutOfGameStorage e) {
             NotEnoughStorage();
         }
@@ -775,6 +773,7 @@ public class ControllerHomepage {
         indexChoice.getItems().clear();
         letterChoice.getItems().clear();
         tableChoices.getColumns().clear();
+
 
         dictText.setText("");
         numWordsText.setText("");

@@ -26,7 +26,11 @@ public class Dictionary {
     public static void store(String ID, List<String> tokens) {
 
         try {
+            File directory = new File(path);
 
+            if(!directory.exists()){
+                directory.mkdir();
+            }
             File file = new File(path + "/" + "hangman_DICTIONARΥ - " + ID + ".txt");
 
             FileWriter fw = new FileWriter(file.getAbsoluteFile());
@@ -45,7 +49,11 @@ public class Dictionary {
     }
 
     public static List<String> load(String dictionary) {
+        File directory = new File(path);
 
+        if(!directory.exists()){
+            directory.mkdir();
+        }
         List<String> Tokens = new ArrayList<>();
         try {
 
@@ -66,8 +74,12 @@ public class Dictionary {
     }
 
     public static Set<String> loadLib() {
+        File directory = new File(path);
 
-        return Stream.of(Objects.requireNonNull(new File(path).listFiles()))
+        if(!directory.exists()){
+            directory.mkdir();
+        }
+        return Stream.of(new File(path).listFiles())
                 .filter(file -> !file.isDirectory())
                 .map(File::getName)
                 .collect(Collectors.toSet());

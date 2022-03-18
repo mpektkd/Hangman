@@ -25,7 +25,6 @@ public class Game {
 
     public Integer faults = 0;
     public Integer correct = 0;
-    public boolean solution = false;
 
     private String _dictionary;
 
@@ -66,7 +65,7 @@ public class Game {
             this.Tries = this.correct + this.faults;
             List<String> tokens = Arrays.asList(String.valueOf(this.Word), String.valueOf(this.Tries), String.valueOf(this.Winner));;
 
-            String GameName = new SimpleDateFormat("yyyyMMddHHmm'.txt'").format(new Date());
+            String GameName = new SimpleDateFormat("yyyy-MM-dd hh-mm-ss'.txt'").format(new Date());
 
             File file = new File(path + "/" + "hangman_GAME - " + GameName);
 
@@ -78,7 +77,7 @@ public class Game {
             }
             bw.close();
 
-        }catch(MyExceptions.OutOfGameStorage e){
+        }catch(MyExceptions.OutOfGameStorage e ){
 
             throw new MyExceptions.OutOfGameStorage();
 
@@ -148,7 +147,6 @@ public class Game {
 
         File file = new File(System.getProperty("user.dir") +"/games/" + history.get(history.size() - 1));
 
-        System.out.println(System.getProperty("user.dir") +"/games/" + history.get(history.size() - 1));
         if (file.delete()) {
             System.out.println("File deleted successfully");
         }
