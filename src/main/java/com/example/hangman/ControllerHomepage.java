@@ -731,6 +731,9 @@ public class ControllerHomepage {
             Stage dialog = CreateModal(new ActionEvent(), "Solution is revealed!");
             VBox vbox = (VBox) dialog.getScene().getRoot();
 
+            if(game.Word == null)
+                throw new NullPointerException();
+
             vbox.getChildren().add(new Text("The secret word is: " + game.Word));
 
             Button ok = new Button();
@@ -739,14 +742,7 @@ public class ControllerHomepage {
                     actionEvent -> {
                         // clear the game board
                         dialog.close();
-                        endGame();
-                        game.Winner = "PC";
-                        try {
-                            game.store();
-                        } catch (MyExceptions.OutOfGameStorage e) {
-                            NotEnoughStorage();
-
-                        }
+                        StoreSolution();
                     }
 
             );
@@ -754,16 +750,25 @@ public class ControllerHomepage {
 
             dialog.show();
 
-
         }catch (NullPointerException e) {
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText("No game has started yet");
-            alert.setContentText("There is NO solution to \"NO game\"...");
+            alert.setContentText("There is NO solution with \"NO WORD\"...");
             alert.showAndWait();
         }
     }
 
+    public void StoreSolution() {
+
+        endGame();
+        game.Winner = "PC";
+        try {
+            game.store();
+        } catch (MyExceptions.OutOfGameStorage e) {
+            NotEnoughStorage();
+        }
+    }
 
     public void endGame(){
 
@@ -778,5 +783,7 @@ public class ControllerHomepage {
 
         hiddenWordText.setText("");
         imageView.setImage(null);
+
+        game.Word = null;
     }
 }
