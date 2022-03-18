@@ -32,6 +32,8 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import static com.example.hangman.Hangman.createDictionary;
+import static com.example.hangman.StringTokenizerToArray.getTokensArray;
+import static java.lang.Character.isLowerCase;
 
 /**
  * Controller of Homepage.fxml
@@ -43,6 +45,8 @@ public class ControllerHomepage {
     private Game game;
     boolean solution = false, gameEnded = false;
     public  int isOver;
+
+    public String dictionaryId;
 
     @FXML
     private BorderPane container;
@@ -68,34 +72,6 @@ public class ControllerHomepage {
 
     @FXML // fx:id="fruitCombo"
     private TextField DictionariesID; // Value injected by FXMLLoader
-
-    @FXML
-    private Menu applicationMenu;
-
-    @FXML
-    private MenuItem startMenuItem;
-
-    @FXML
-    private MenuItem createMenuItem;
-
-    @FXML
-    private MenuItem loadMenuItem;
-
-    @FXML
-    private MenuItem exitMenuItem;
-
-    // Details Menu
-    @FXML
-    private Menu detailsMenu;
-
-    @FXML
-    private MenuItem dictMenuItem;
-
-    @FXML
-    private MenuItem roundsMenuItem;
-
-    @FXML
-    private MenuItem solutionMenuItem;
 
     // Game Informations
     @FXML
@@ -144,16 +120,6 @@ public class ControllerHomepage {
     private void enterAction(ActionEvent event) {
         play();
     }
-    private static boolean isNumeric(String s) {
-        return s != null && s.matches("^[0-9]*$");
-    }
-
-    private String ListToString(ArrayList<Character> list) {
-        String listString = list.stream().map(Object::toString)
-                .collect(Collectors.joining(", "));
-        return listString;
-    }
-
 
     @FXML
     private void StartGame(ActionEvent event) {
@@ -190,6 +156,7 @@ public class ControllerHomepage {
                 // Initialize dropdown List and add options
                 DictionariesCombo = new ComboBox<>();
                 DictionariesCombo.getItems().setAll(Dictionary.loadLib());
+                System.out.println(Dictionary.loadLib());
                 dialogVbox.getChildren().add(DictionariesCombo);
 
                 // Submit button for loading the dictionary
@@ -216,8 +183,169 @@ public class ControllerHomepage {
                 submit.setText("Submit");
                 submit.setOnAction(
                         actionEvent -> {
-                            createDictionary(DictionariesID.getText());
-                            dialog.close();
+                            try {
+                                dialog.close();
+                                dictionaryId = DictionariesID.getText();
+                                createDictionary(dictionaryId);
+                            } catch (MyExceptions.InvalidRangeException e) {
+
+                                Stage modal = CreateModal(new ActionEvent(), "InvalidRangeException");
+                                VBox vbox = (VBox) modal.getScene().getRoot();
+                                vbox.getChildren().add(new Text("Would you like to filter the dictionary?"));
+
+                                // Submit button for loading the dictionary
+                                Button yes = new Button();
+                                yes.setText("Yes");
+                                yes.setOnAction(
+                                        action -> {
+                                            try {
+                                                modal.close();
+                                                StringTokenizerToArray.filter();
+
+                                                // save the file
+                                                Dictionary.store(dictionaryId, StringTokenizerToArray.strTokenArray);
+                                            } catch (MyExceptions.InvalidCountException ex) {
+
+                                                    Stage dublicatemodal = CreateModal(new ActionEvent(), "InvalidCountException");
+                                                    VBox dublicatemodalvbox = (VBox) dublicatemodal.getScene().getRoot();
+                                                    dublicatemodalvbox.getChildren().add(new Text("Would you like to remove the dublicates?"));
+
+                                                    // Submit button for loading the dictionary
+                                                    Button yes1 = new Button();
+                                                    yes1.setText("Yes");
+                                                    yes1.setOnAction(
+                                                            actionevnt -> {
+                                                                try {
+                                                                    dublicatemodal.close();
+                                                                    StringTokenizerToArray.dublicate(true);
+
+                                                                    // save the file
+                                                                    Dictionary.store(dictionaryId, StringTokenizerToArray.strTokenArray);
+
+                                                                } catch (MyExceptions.UnbalancedException e_) {
+
+                                                                    Stage _modal = CreateModal(new ActionEvent(), "UnbalancedException");
+                                                                    VBox _vbox = (VBox) _modal.getScene().getRoot();
+                                                                    _vbox.getChildren().add(new Text("Invalid Dataset!"));
+
+                                                                    _modal.show();
+                                                                } catch (MyExceptions.UndersizeException e_) {
+
+                                                                    Stage _modal = CreateModal(new ActionEvent(), "UndersizeException");
+                                                                    VBox _vbox = (VBox) _modal.getScene().getRoot();
+                                                                    _vbox.getChildren().add(new Text("Invalid Dataset!"));
+
+                                                                    _modal.show();
+                                                                }
+                                                            });
+
+
+                                                Button no = new Button();
+                                                no.setText("No");
+                                                no.setOnAction(
+                                                        actionEvent1 -> {
+                                                            dublicatemodal.close();
+                                                        }
+                                                );
+
+                                                // add the buttons to root
+                                                dublicatemodalvbox.getChildren().add(yes1);
+                                                dublicatemodalvbox.getChildren().add(no);
+
+                                                // show modal
+                                                dublicatemodal.show();
+                                            } catch (MyExceptions.UnbalancedException ex) {
+                                                Stage _modal = CreateModal(new ActionEvent(), "UnbalancedException");
+                                                VBox _vbox = (VBox) _modal.getScene().getRoot();
+                                                _vbox.getChildren().add(new Text("Invalid Dataset!"));
+
+                                                _modal.show();
+                                            } catch (MyExceptions.UndersizeException ex) {
+                                                Stage _modal = CreateModal(new ActionEvent(), "UndersizeException");
+                                                VBox _vbox = (VBox) _modal.getScene().getRoot();
+                                                _vbox.getChildren().add(new Text("Invalid Dataset!"));
+
+                                                _modal.show();
+                                            }
+                                        });
+
+                                Button no = new Button();
+                                no.setText("No");
+                                no.setOnAction(
+                                        actionEvent1 -> {
+                                            modal.close();
+                                        }
+                                );
+
+                                // add the buttons to root
+                                vbox.getChildren().add(yes);
+                                vbox.getChildren().add(no);
+
+                                // show modal
+                                modal.show();
+
+                            } catch (MyExceptions.InvalidCountException e) {
+
+                                Stage dublicatemodal = CreateModal(new ActionEvent(), "InvalidCountException");
+                                VBox dublicatemodalvbox = (VBox) dublicatemodal.getScene().getRoot();
+                                dublicatemodalvbox.getChildren().add(new Text("Would you like to remove the dublicates?"));
+
+                                // Submit button for loading the dictionary
+                                Button yes1 = new Button();
+                                yes1.setText("Yes");
+                                yes1.setOnAction(
+                                        actionevnt -> {
+                                            try {
+                                                dublicatemodal.close();
+                                                StringTokenizerToArray.dublicate(true);
+
+                                                // save the file
+                                                Dictionary.store(dictionaryId, StringTokenizerToArray.strTokenArray);
+
+                                            } catch (MyExceptions.UnbalancedException e_) {
+
+                                                Stage _modal = CreateModal(new ActionEvent(), "UnbalancedException");
+                                                VBox _vbox = (VBox) _modal.getScene().getRoot();
+                                                _vbox.getChildren().add(new Text("Invalid Dataset!"));
+
+                                                _modal.show();
+                                            } catch (MyExceptions.UndersizeException e_) {
+
+                                                Stage _modal = CreateModal(new ActionEvent(), "UndersizeException");
+                                                VBox _vbox = (VBox) _modal.getScene().getRoot();
+                                                _vbox.getChildren().add(new Text("Invalid Dataset!"));
+
+                                                _modal.show();
+                                            }
+                                        });
+
+                                Button no = new Button();
+                                no.setText("No");
+                                no.setOnAction(
+                                        actionEvent1 -> {
+                                            dublicatemodal.close();
+                                        }
+                                );
+
+                                // add the buttons to root
+                                dublicatemodalvbox.getChildren().add(yes1);
+                                dublicatemodalvbox.getChildren().add(no);
+
+
+                                dublicatemodal.show();
+                            } catch (MyExceptions.UnbalancedException ex) {
+                                Stage _modal = CreateModal(new ActionEvent(), "UnbalancedException");
+                                VBox _vbox = (VBox) _modal.getScene().getRoot();
+                                _vbox.getChildren().add(new Text("Invalid Dataset!"));
+
+                                _modal.show();
+                            } catch (MyExceptions.UndersizeException ex) {
+                                Stage _modal = CreateModal(new ActionEvent(), "UndersizeException");
+                                VBox _vbox = (VBox) _modal.getScene().getRoot();
+                                _vbox.getChildren().add(new Text("Invalid Dataset!"));
+
+                                _modal.show();
+                            }
                         }
 
                 );
@@ -292,7 +420,7 @@ public class ControllerHomepage {
 
             dialog.show();
         }catch(MyExceptions.LoadingDictinaryException e){
-            Stage dialog = CreateModal(event, "Statistics");
+            Stage dialog = CreateModal(event, "No Dictionary");
             VBox vbox = (VBox) dialog.getScene().getRoot();
 
             vbox.getChildren().add(new Text("You have to choose a Dictionary!"));
@@ -470,7 +598,7 @@ public class ControllerHomepage {
                     try {
                         game.store();
                     } catch (MyExceptions.OutOfGameStorage e) {
-                        e.printStackTrace();
+                        NotEnoughStorage();
                     }
                     dialog.close();
                 }
@@ -491,10 +619,11 @@ public class ControllerHomepage {
     }
 
     private void updateActiveWord() {
+        System.out.println(game.choices.predictedlistWord);
         StringBuilder word = new StringBuilder();
         for(int i = 0; i < game.choices.predictedlistWord.size(); i++) {
             Character letter = game.choices.predictedlistWord.get(i);
-            if (letter == 'e') word.append("_");
+            if (letter == 'ε' || isLowerCase(letter)) word.append("_");
             else word.append(letter);
             word.append(" ");
         }
@@ -505,7 +634,7 @@ public class ControllerHomepage {
         List<TableChoice> possibleChoices = new ArrayList<TableChoice>();
         for(int i=0; i < game.Word.length(); i++) {
 
-            if (game.choices.predictedlistWord.get(i) != 'e')
+            if (game.choices.predictedlistWord.get(i) != 'ε' && !isLowerCase(game.choices.predictedlistWord.get(i)))
                 continue;
 
             StringBuilder temp = new StringBuilder();
@@ -626,8 +755,7 @@ public class ControllerHomepage {
             dialog.show();
 
 
-
-        } catch (NullPointerException e) {
+        }catch (NullPointerException e) {
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText("No game has started yet");

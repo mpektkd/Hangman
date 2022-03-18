@@ -14,6 +14,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static java.lang.Character.isLowerCase;
+import static java.lang.Character.toLowerCase;
+
 public class Choices {
 
     // File for storing last 5 games
@@ -37,7 +40,7 @@ public class Choices {
         WordList = new ArrayList<>();
 
         for (char ch : Word.toCharArray()) {
-            predictedlistWord.add('e'); //empty
+            predictedlistWord.add('ε'); //empty
             WordList.add(ch);
         }
 
@@ -54,11 +57,6 @@ public class Choices {
 
     public void update(){
 
-        // change the predictedListWord based on the choice of the user
-        for (int i = 0; i < predictedlistWord.size(); i++) {
-            predictedlistWord.set(i, this.predictedlistWord.get(i)); //empty
-        }
-
         /*
 
             Calculate the probabilities
@@ -67,7 +65,7 @@ public class Choices {
         boolean all_e = true;
 
         for (char ch : predictedlistWord){
-            if (ch != 'e'){
+            if (ch != 'ε'){
                 all_e = false;
                 break;
             }
@@ -81,13 +79,13 @@ public class Choices {
         // list of filterTokens
         List<String> filterTokens = new ArrayList<>();
 
-        // temporary ch-list for each token
-        List<Character> temp = new ArrayList<>();
-
         boolean remove ;
 
         for (String token : tokens) {
             remove = false;
+
+            // temporary ch-list for each token
+            List<Character> temp = new ArrayList<>();
 
             for (char ch : token.toCharArray()) {
                 temp.add(ch);
@@ -97,7 +95,19 @@ public class Choices {
                 char c1 = predictedlistWord.get(j);
                 char c2 = temp.get(j);
 
-                if (c1 != 'e' && c1 != c2 && !all_e) {
+                // lowercase defines wrong guess
+//                System.out.println(c1 == toLowerCase(c2));
+                // remove words that do not have the correct char
+                if (c1 != 'ε' && c1 != c2 && !isLowerCase(c1) && !all_e) {
+//                    System.out.println(c1 == toLowerCase(c2));
+                    System.out.println("Im here" + c2 + " " + token);
+                    remove = true;
+                    break;
+                }
+                // remove words that do have the wrong char
+                if (c1 != 'ε' && c1 == toLowerCase(c2) && isLowerCase(c1) && !all_e) {
+//                    System.out.println(c1 == toLowerCase(c2));
+                    System.out.println("Im here" + c2 + " " + token);
                     remove = true;
                     break;
                 }
@@ -106,7 +116,8 @@ public class Choices {
                 filterTokens.add(token);
 
         }
-
+        System.out.println(tokens);
+        System.out.println(filterTokens);
 
         for (int i = 0; i < Word.length(); i++){
 
@@ -124,6 +135,9 @@ public class Choices {
                         count_temp++;
 
                 }
+                System.out.println(count_temp );
+                System.out.println((double)filterTokens.size());
+                System.out.println(count_temp / (double)filterTokens.size());
                 temp_choice.set(j, new Pair(temp_choice.get(j).getKey(), count_temp / (double)filterTokens.size()));
 
             }

@@ -12,6 +12,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.lang.Character.toLowerCase;
+
 public class Game {
 
     // File for storing last 5 games
@@ -121,6 +123,7 @@ public class Game {
 
         }
         else{
+            this.choices.predictedlistWord.set(index, toLowerCase(ch));
             faults ++;
             TotalPoints -= 15;
         }
@@ -145,6 +148,7 @@ public class Game {
 
         File file = new File(System.getProperty("user.dir") +"/games/" + history.get(history.size() - 1));
 
+        System.out.println(System.getProperty("user.dir") +"/games/" + history.get(history.size() - 1));
         if (file.delete()) {
             System.out.println("File deleted successfully");
         }
